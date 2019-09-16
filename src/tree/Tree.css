@@ -6,6 +6,11 @@
     list-style: none;
 }
 
+.tree-container li{
+    padding-left: 1em;
+    text-indent: -1em;
+}
+
 .input-container input{
     border-radius: 5px;
     margin-right: 10px;
