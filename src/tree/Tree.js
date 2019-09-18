@@ -10,7 +10,7 @@ import "./Tree.css"
 
 
 
-function NodeSettings({name, addChildCallback, udpateCurrentNameCallback}){
+function NodeSettings({name, addChildCallback, udpateCurrentNameCallback, deleteNodeCallBack}){
     const [state, updateState] = useState({currentName:name, editing:false, childNodeName: ""})
     const [errors, setError] = useState({currentNodeError:"", childError:""})
     const {currentName, childNodeName} = state;
@@ -58,6 +58,9 @@ function NodeSettings({name, addChildCallback, udpateCurrentNameCallback}){
 
     return (
         <div className="node-settings">
+            <div><Button onClick={()=>{
+                deleteNodeCallBack()
+            }}>Delete</Button></div>
             <div className="edit-name">
                 <input value={currentName} onChange={handleCurrentNodeNameChange}/>
                 <Button type="primary" onClick={(event)=>{
@@ -81,14 +84,24 @@ function Node(props) {
     const {isOpen, children, level, tree, path, name, index} = props;
     const dispatch = useDispatch()
     let ref = tree;
+    let parent = tree;
     for (let i=0; i<path.length; i++){
-        if (i===0){
+        if (i===0) {
             ref = ref[path[i]]
-        }else{
+            if (path.length === 2){
+                parent = ref
+            }
+        }
+        else if (path.length > 2 && i === path.length-2){
+            parent = ref.children[path[i]]
+            ref = ref.children[path[i]]
+        }
+        else{
             ref = ref.children[path[i]]
         }
     }
     const handleUpdateIsOpen = ()=>{
+        console.log(ref);
         ref.isOpen = !isOpen;
         dispatch(udpateTree(tree));
     }
@@ -101,6 +114,16 @@ function Node(props) {
         ref.name = name
         dispatch(udpateTree(tree))
     }
+    const deleteNodeCallBack = ()=>{
+        if (path.length === 1){
+            tree.splice(path[0], 1)
+        }else{
+            for(let i=0; i< parent.children.length; i++){
+                parent.children.splice(path[path.length-1], 1);
+            }
+        }
+        dispatch(udpateTree(tree))
+    }
     return (
         <ul>
             <li key={`${level}-${index}`}>
@@ -109,7 +132,7 @@ function Node(props) {
                         handleUpdateIsOpen()
                     }}></i>
                     <Popover trigger="click" title={`Node settings`} placement="right"
-                            content={<NodeSettings name={name} addChildCallback={addChild} udpateCurrentNameCallback={udpateName}/>}>
+                            content={<NodeSettings name={name} addChildCallback={addChild} udpateCurrentNameCallback={udpateName} deleteNodeCallBack={deleteNodeCallBack}/>}>
                         <h4>{name}</h4>
                     </Popover>
                 </div>

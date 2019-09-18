@@ -35,15 +35,7 @@
 .error {
     color: red;
 }
-/* .node-settings {
-    z-index: 1000;
-    padding: 20px;
-    width: 300px;
-    background: white;
-    box-shadow:  2px 2px lightgray;
-    border: 1px solid lightgray;
-    border-radius: 3px;
-}  */
+
 .node-settings input{
     margin-right: 10px;
 }
